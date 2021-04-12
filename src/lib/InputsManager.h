@@ -22,8 +22,7 @@ class InputsManager {
     EventFlags stateChangedEvent;
     Thread watchThread;
     uint16_t previousStates;
-    uint32_t lastChangeTime[16];
-    Timer timer;
+    std::chrono::time_point<rtos::Kernel::Clock> lastChangeTime[16];
 
     void interruptHandler();
     void watchChanges();

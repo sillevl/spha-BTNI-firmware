@@ -6,7 +6,6 @@ InputsManager::InputsManager(I2C* i2c, PinName interruptPin) : interrupt(interru
     interrupt.fall(mbed::callback(this, &InputsManager::interruptHandler));
     watchThread.start(mbed::callback(this, &InputsManager::watchChanges));
     previousStates = getInputs();
-    timer.start();
 }
 
 uint16_t InputsManager::getInputs() {
@@ -31,9 +30,9 @@ void InputsManager::watchChanges() {
             bool previousState = previousStates & (0x01 << channel);
 
             if(!(currentState == previousState)) {
-                uint32_t currentTime = duration_cast<milliseconds>(timer.elapsed_time()).count();
-                uint32_t previousChangeTime = lastChangeTime[channel];
-                uint32_t timeSinceChange = currentTime - previousChangeTime;
+                auto currentTime = Kernel::Clock::now(); //duration_cast<milliseconds>(timer.elapsed_time()).count();
+                auto previousChangeTime = lastChangeTime[channel];
+                uint32_t timeSinceChange = duration_cast<milliseconds>(currentTime - previousChangeTime).count();
 
                 lastChangeTime[channel] = currentTime;
                 KeyState state = (currentState == 1) ? PRESSED : RELEASED;
